@@ -9,7 +9,7 @@ Pan and zoom are completed, rotation is not.
 Regarding rotation I could not complete the saving of the image. 
 Getting the scaled and panned image that matches what the user is looking at, poses an extra problem when the image is rotated, because, depending on the rotation, a completely different part of the image should be saved. This is because the user can translate and rotate the image even outside of the viewfinder, thus making complex to reconstruct the result to be saved. 
 
-Needs to be completed:
+Need to be completed:
  - save image correctly if rotated
  - make sure different gestures (pan/zoom/rotate) don’t conflict,
  - rotation of the image on the center of the image itself (now rotates on the center of the ImageView),
