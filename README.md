@@ -13,5 +13,6 @@ Need to be completed:
  - save image correctly if rotated,
  - make sure different gestures (pan/zoom/rotate) don’t conflict,
  - rotation of the image on the center of the image itself (now rotates on the center of the ImageView),
- - initial setup of the image depending on dimensions (only simple one implemented),
+ - initial setup of the image depending on dimensions,
+ - memory management,
  - 1819x1382 pixels aspect ratio.

@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -73,10 +72,12 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
                 scaleImage(scaleFactor, detector.getFocusX(), detector.getFocusY());
                 return true;
             }
+
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
                 return true;
             }
+
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
             }
@@ -86,19 +87,23 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
             public void onLongPress(MotionEvent e) {
                 super.onLongPress(e);
             }
+
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 translateImage(distanceX, distanceY);
                 return true;
             }
+
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
+
             @Override
             public boolean onDown(MotionEvent e) {
                 return super.onDown(e);
             }
+
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 return super.onDoubleTap(e);
@@ -253,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         rectFSource.left = 0;
         rectFSource.right = imageView.getDrawable().getIntrinsicWidth();
         rectFSource.bottom = imageView.getDrawable().getIntrinsicHeight();
-        Matrix imagemaxtrix = imageView.getImageMatrix();//;
+        Matrix imagemaxtrix = imageView.getImageMatrix();
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
