@@ -11,6 +11,7 @@ Getting the scaled and panned image that matches what the user is looking at, po
 
 Need to be completed:
  - save image correctly if rotated,
+ - save image correctly if panned (in some cases),
  - make sure different gestures (pan/zoom/rotate) don’t conflict,
  - rotation of the image on the center of the image itself (now rotates on the center of the ImageView),
  - initial setup of the image depending on dimensions,
