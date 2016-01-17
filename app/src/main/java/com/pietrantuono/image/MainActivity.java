@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Intent intent = new Intent();
         intent.setAction(android.content.Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(file), "image/*");
-        startActivity(intent);
+        //startActivity(intent);
     }
 
     private int getHeigth() {
