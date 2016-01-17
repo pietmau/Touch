@@ -1,6 +1,7 @@
 # Touch
 
-This work is unfinished, please consider it as an such, I have tried to implement all the features in the given time rather than polish it, the result is ugly, I apologize for the discomfort of reading it.
+This work is unfinished, please consider it as an such, I have tried to implement all the features I could in the given time rather than polish it.
+The result is ugly, I apologize for the discomfort of reading it.
 Needs to be cleaned (badly), refactored (very badly) and obviously all features should be implemented.
 
 Pan and zoom are completed, rotation is not.
