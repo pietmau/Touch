@@ -17,7 +17,6 @@
         android:layout_height="400dp" />
 
     <Button
-        android:layout_below="@+id/image"
         android:text="PICK"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
@@ -27,7 +26,6 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:layout_below="@+id/image"
         android:text="SAVE"
         android:id="@+id/save"
         android:layout_alignParentBottom="true"
