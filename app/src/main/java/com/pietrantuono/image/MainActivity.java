@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix matrix = new Matrix();
         matrix.set(imageView.getImageMatrix());
         //matrix.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
-        Bitmap notRotatedbitmap = Bitmap.createBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, ((BitmapDrawable) imageView.getDrawable()).getBitmap().getWidth(), ((BitmapDrawable) imageView.getDrawable()).getBitmap().getHeight(),matrix,true);
+        Bitmap notRotatedbitmap = Bitmap.createBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, ((BitmapDrawable) imageView.getDrawable()).getBitmap().getWidth(), ((BitmapDrawable) imageView.getDrawable()).getBitmap().getHeight(), matrix, true);
         Bitmap croppedbitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
 
         //Bitmap scaledBitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
@@ -223,8 +223,19 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         float checkpositive = (imageView.getHeight() - rectFDestination.top) / ((-rectFDestination.top + rectFDestination.bottom) / rectFSource.bottom);
         float checknegative = ((-rectFDestination.top + rectFDestination.bottom) + rectFDestination.top) / ((-rectFDestination.top + rectFDestination.bottom) / rectFSource.bottom);
 
-        if (rectFDestination.top > 0) return (int) Math.max(0,imageView.getHeight()-rectFDestination.top);
-        else return (int) Math.max(0,rectFDestination.bottom);
+        RectF imageviewRetf = new RectF();
+        imageviewRetf.top = 0;
+        imageviewRetf.left = 0;
+        imageviewRetf.right = imageView.getWidth();
+        imageviewRetf.bottom = imageView.getHeight();
+
+        RectF intersection=new RectF();
+        intersection.set(imageviewRetf);
+
+        if (intersection.intersect(rectFDestination)) {
+            return (int) (intersection.bottom-intersection.top);
+        }
+        else return 0;
     }
 
     private int getWidth() {
@@ -249,9 +260,19 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         float checkpositive = ((imageView.getWidth() - rectFDestination.left)) / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
         float checknegative = rectFDestination.right / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
 
+        RectF imageviewRetf = new RectF();
+        imageviewRetf.top = 0;
+        imageviewRetf.left = 0;
+        imageviewRetf.right = imageView.getWidth();
+        imageviewRetf.bottom = imageView.getHeight();
 
-        if (rectFDestination.left > 0) return (int) Math.max(0,imageView.getWidth()-rectFDestination.left);
-        else return (int) Math.max(0,rectFDestination.right);
+        RectF intersection=new RectF();
+        intersection.set(imageviewRetf);
+
+        if (intersection.intersect(rectFDestination)) {
+            return (int) (intersection.right-intersection.left);
+        }
+        else return 0;
     }
 
     private int getY() {
@@ -272,8 +293,21 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         matrix1.mapRect(rectFDestination, rectFSource);
         float check = (rectFDestination.top) / ((-rectFDestination.bottom + rectFDestination.top) / rectFSource.bottom);
 
-        if (rectFDestination.top > 0) return 0;
-        else return (int) -rectFDestination.top;
+        RectF imageviewRetf = new RectF();
+        imageviewRetf.top = 0;
+        imageviewRetf.left = 0;
+        imageviewRetf.right = imageView.getWidth();
+        imageviewRetf.bottom = imageView.getHeight();
+
+        RectF modified=new RectF();
+        modified.set(imageviewRetf);
+
+        if (modified.intersect(rectFDestination)) {
+            modified.offset(-rectFDestination.left,-rectFDestination.top);
+            return (int) modified.top;
+        }
+        else return 0;
+
     }
 
     public int getX() {
@@ -309,11 +343,14 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageviewRetf.right = imageView.getWidth();
         imageviewRetf.bottom = imageView.getHeight();
 
+        RectF modified=new RectF();
+        modified.set(imageviewRetf);
 
-
-
-        if (rectFDestination.left > 0) return 0;
-        else return (int) -rectFDestination.left;
+        if (modified.intersect(rectFDestination)) {
+            modified.offset(-rectFDestination.left,-rectFDestination.top);
+            return (int) modified.left;
+            }
+        else return 0;
     }
 
     @Override
