@@ -2,7 +2,9 @@ package com.pietrantuono.image;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -154,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
                     } catch (IOException e) {
                     }
                     imageView.setImageBitmap(bitmap);
+
                     imageWidth = imageView.getDrawable().getIntrinsicWidth();
                     imageHeight = imageView.getDrawable().getIntrinsicHeight();
                     RectF drawableRect = new RectF(0, 0, imageWidth, imageHeight);
@@ -181,17 +184,21 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         int width = getWidth();
         int height = getHeigth();
         Matrix matrix = new Matrix();
-        matrix.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
-        Bitmap notRotatedbitmap = Bitmap.createBitmap(bimap, 0, 0, bimap.getWidth(), bimap.getHeight());
-        Bitmap scaledBitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+        matrix.set(imageView.getImageMatrix());
+        //matrix.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
+        Bitmap notRotatedbitmap = Bitmap.createBitmap(bimap, 0, 0, bimap.getWidth(), bimap.getHeight(),matrix,true);
+        Bitmap croppedbitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
+
+
+        //Bitmap scaledBitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
+        //Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
         String root = Environment.getExternalStorageDirectory().toString();
         String fname = "Touchnote.jpg";
         File file = new File(root, fname);
         if (file.exists()) file.delete();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            croppedbitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -217,8 +224,9 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         matrix1.mapRect(rectFDestination, rectFSource);
         float checkpositive = (imageView.getHeight() - rectFDestination.top) / ((-rectFDestination.top + rectFDestination.bottom) / rectFSource.bottom);
         float checknegative = ((-rectFDestination.top + rectFDestination.bottom) + rectFDestination.top) / ((-rectFDestination.top + rectFDestination.bottom) / rectFSource.bottom);
-        if (rectFDestination.top > 0) return (int) checkpositive;
-        else return (int) checknegative;
+
+        if (rectFDestination.top > 0) return (int) Math.max(0,imageView.getHeight()-rectFDestination.top);
+        else return (int) Math.max(0,rectFDestination.bottom);
     }
 
     private int getWidth() {
@@ -242,8 +250,10 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         matrix1.mapRect(rectFDestination, rectFSource);
         float checkpositive = ((imageView.getWidth() - rectFDestination.left)) / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
         float checknegative = rectFDestination.right / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
-        if (rectFDestination.left > 0) return (int) checkpositive;
-        else return (int) checknegative;
+
+
+        if (rectFDestination.left > 0) return (int) Math.max(0,imageView.getWidth()-rectFDestination.left);
+        else return (int) Math.max(0,rectFDestination.right);
     }
 
     private int getY() {
@@ -263,8 +273,9 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
         float check = (rectFDestination.top) / ((-rectFDestination.bottom + rectFDestination.top) / rectFSource.bottom);
+
         if (rectFDestination.top > 0) return 0;
-        else return (int) check;
+        else return (int) rectFDestination.bottom;
     }
 
     public int getX() {
@@ -282,10 +293,29 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix imagemaxtrix = imageView.getImageMatrix();//;
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
+
+        //matrix1.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
+
+        float[] g = new float[9];
+        imagemaxtrix.getValues(g);
+        float scaleX = g[Matrix.MSCALE_X];
+        float scaleY = g[Matrix.MSCALE_Y];
+
+        //matrix1.postScale(1/scaleX,1/scaleY);
+
         matrix1.mapRect(rectFDestination, rectFSource);
         float check = (-rectFDestination.left) / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
+        RectF imageviewRetf = new RectF();
+        imageviewRetf.top = 0;
+        imageviewRetf.left = 0;
+        imageviewRetf.right = imageView.getWidth();
+        imageviewRetf.bottom = imageView.getHeight();
+
+
+
+
         if (rectFDestination.left > 0) return 0;
-        else return (int) check;
+        else return (int) rectFDestination.right;
     }
 
     @Override
