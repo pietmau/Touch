@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
 
 
     private void saveImage() {
-        Bitmap bimap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         int x = getX();
         int y = getY();
         int width = getWidth();
@@ -186,9 +185,8 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix matrix = new Matrix();
         matrix.set(imageView.getImageMatrix());
         //matrix.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
-        Bitmap notRotatedbitmap = Bitmap.createBitmap(bimap, 0, 0, bimap.getWidth(), bimap.getHeight(),matrix,true);
+        Bitmap notRotatedbitmap = Bitmap.createBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, ((BitmapDrawable) imageView.getDrawable()).getBitmap().getWidth(), ((BitmapDrawable) imageView.getDrawable()).getBitmap().getHeight(),matrix,true);
         Bitmap croppedbitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
-
 
         //Bitmap scaledBitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
         //Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
