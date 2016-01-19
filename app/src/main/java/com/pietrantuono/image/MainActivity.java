@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         float check = (rectFDestination.top) / ((-rectFDestination.bottom + rectFDestination.top) / rectFSource.bottom);
 
         if (rectFDestination.top > 0) return 0;
-        else return (int) rectFDestination.bottom;
+        else return (int) -rectFDestination.top;
     }
 
     public int getX() {
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
 
 
         if (rectFDestination.left > 0) return 0;
-        else return (int) rectFDestination.right;
+        else return (int) -rectFDestination.left;
     }
 
     @Override
