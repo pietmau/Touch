@@ -2,9 +2,7 @@ package com.pietrantuono.image;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -41,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
     private GestureDetectorCompat panDetector;
     private RotationGestureDetector rotationGestureDetector;
     private float startAngle;
+    private boolean isScaling;
+    private boolean isRotating;
+    private PanGestureDetector mOwnPanGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,52 +65,60 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 mScaleDetector.onTouchEvent(event);
-                panDetector.onTouchEvent(event);
+                //panDetector.onTouchEvent(event);
+                mOwnPanGestureDetector.onTouchEvent(event);
                 rotationGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
         mScaleDetector = new ScaleGestureDetector(MainActivity.this, new ScaleGestureDetector.OnScaleGestureListener() {
+            @DebugLog
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
                 float scaleFactor = detector.getScaleFactor();
                 scaleImage(scaleFactor, detector.getFocusX(), detector.getFocusY());
                 return true;
             }
+            @DebugLog
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
+                isScaling=true;
                 return true;
             }
+            @DebugLog
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
+                isScaling=false;
             }
         });
         panDetector = new GestureDetectorCompat(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public void onLongPress(MotionEvent e) {
-                super.onLongPress(e);
-            }
+            @DebugLog
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 translateImage(distanceX, distanceY);
                 return true;
             }
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                return super.onFling(e1, e2, velocityX, velocityY);
-            }
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return super.onDown(e);
-            }
-
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                return super.onDoubleTap(e);
-            }
         });
         rotationGestureDetector = new RotationGestureDetector(MainActivity.this);
+        mOwnPanGestureDetector =new PanGestureDetector(new PanGestureDetector.OnMoveGestureListener() {
+            @DebugLog
+            @Override
+            public void onMove(float distanceX, float distanceY) {
+                translateImage(distanceX,distanceY);
+            }
+            @DebugLog
+            @Override
+            public void onEndMove() {
+
+            }
+            @DebugLog
+            @Override
+            public void onStartMove() {
+
+            }
+        });
     }
+
     @DebugLog
     private void translateImage(float distanceX, float distanceY) {
         matrix = imageView.getImageMatrix();
@@ -354,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
     @DebugLog
     @Override
     public void onEndRotation() {
+        isRotating=false;
         float angle = getCurrentAngle();
         float snapAngle = 0;
         if (angle < 45 && angle >= 0) snapAngle = 0;
@@ -376,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
     @DebugLog
     @Override
     public void onStartRotation() {
+        isRotating=false;
         startAngle = getCurrentAngle();
     }
 
