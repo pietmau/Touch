@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import hugo.weaving.DebugLog;
+
 public class MainActivity extends AppCompatActivity implements RotationGestureDetector.OnRotationGestureListener {
     private static final int PICK_IMAGE = 1;
     ImageView imageView;
@@ -74,12 +76,10 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
                 scaleImage(scaleFactor, detector.getFocusX(), detector.getFocusY());
                 return true;
             }
-
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
                 return true;
             }
-
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
             }
@@ -89,18 +89,15 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
             public void onLongPress(MotionEvent e) {
                 super.onLongPress(e);
             }
-
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 translateImage(distanceX, distanceY);
                 return true;
             }
-
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
-
             @Override
             public boolean onDown(MotionEvent e) {
                 return super.onDown(e);
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         });
         rotationGestureDetector = new RotationGestureDetector(MainActivity.this);
     }
-
+    @DebugLog
     private void translateImage(float distanceX, float distanceY) {
         matrix = imageView.getImageMatrix();
         displayMatrix.set(matrix);
@@ -121,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageView.setImageMatrix(displayMatrix);
     }
 
+    @DebugLog
     private void scaleImage(float scaleFactor, float focusX, float focusY) {
         matrix = imageView.getImageMatrix();
         displayMatrix.set(matrix);
@@ -184,12 +182,8 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         int height = getHeigth();
         Matrix matrix = new Matrix();
         matrix.set(imageView.getImageMatrix());
-        //matrix.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
         Bitmap notRotatedbitmap = Bitmap.createBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap(), 0, 0, ((BitmapDrawable) imageView.getDrawable()).getBitmap().getWidth(), ((BitmapDrawable) imageView.getDrawable()).getBitmap().getHeight(), matrix, true);
         Bitmap croppedbitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
-
-        //Bitmap scaledBitmap = Bitmap.createBitmap(notRotatedbitmap, x, y, width, height);
-        //Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
         String root = Environment.getExternalStorageDirectory().toString();
         String fname = "Touchnote.jpg";
         File file = new File(root, fname);
@@ -220,8 +214,6 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
-        float checkpositive = (imageView.getHeight() - rectFDestination.top) / ((-rectFDestination.top + rectFDestination.bottom) / rectFSource.bottom);
-        float checknegative = ((-rectFDestination.top + rectFDestination.bottom) + rectFDestination.top) / ((-rectFDestination.top + rectFDestination.bottom) / rectFSource.bottom);
 
         RectF imageviewRetf = new RectF();
         imageviewRetf.top = 0;
@@ -257,8 +249,6 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
-        float checkpositive = ((imageView.getWidth() - rectFDestination.left)) / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
-        float checknegative = rectFDestination.right / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
 
         RectF imageviewRetf = new RectF();
         imageviewRetf.top = 0;
@@ -291,7 +281,6 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
-        float check = (rectFDestination.top) / ((-rectFDestination.bottom + rectFDestination.top) / rectFSource.bottom);
 
         RectF imageviewRetf = new RectF();
         imageviewRetf.top = 0;
@@ -326,17 +315,11 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
 
-        //matrix1.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
-
         float[] g = new float[9];
         imagemaxtrix.getValues(g);
-        float scaleX = g[Matrix.MSCALE_X];
-        float scaleY = g[Matrix.MSCALE_Y];
-
-        //matrix1.postScale(1/scaleX,1/scaleY);
 
         matrix1.mapRect(rectFDestination, rectFSource);
-        float check = (-rectFDestination.left) / ((-rectFDestination.left + rectFDestination.right) / rectFSource.right);
+
         RectF imageviewRetf = new RectF();
         imageviewRetf.top = 0;
         imageviewRetf.left = 0;
@@ -352,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
             }
         else return 0;
     }
-
+    @DebugLog
     @Override
     public void onRotation(RotationGestureDetector rotationDetector) {
         Matrix matrix = imageView.getImageMatrix();
@@ -368,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageView.setImageMatrix(displayMatrix);
     }
 
+    @DebugLog
     @Override
     public void onEndRotation() {
         float angle = getCurrentAngle();
@@ -389,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         displayMatrix.postRotate(-snapAngle, imageView.getWidth() / 2, imageView.getHeight() / 2);
         imageView.setImageMatrix(displayMatrix);
     }
-
+    @DebugLog
     @Override
     public void onStartRotation() {
         startAngle = getCurrentAngle();

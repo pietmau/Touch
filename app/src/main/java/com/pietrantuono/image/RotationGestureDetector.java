@@ -60,7 +60,7 @@ public class RotationGestureDetector {
             case MotionEvent.ACTION_CANCEL:
                 ptrID1 = INVALID_POINTER_ID;
                 ptrID2 = INVALID_POINTER_ID;
-                mListener.onEndRotation();
+                onEndRotation();
                 break; 
         } 
         return true; 
