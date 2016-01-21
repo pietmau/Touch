@@ -20,10 +20,11 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import hugo.weaving.DebugLog;
 
-public class MainActivity extends AppCompatActivity implements RotationGestureDetector.OnRotationGestureListener {
+public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1;
     ImageView imageView;
     Bitmap bitmap;
@@ -39,13 +40,17 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
     private GestureDetectorCompat panDetector;
     private RotationGestureDetector rotationGestureDetector;
     private float startAngle;
-    private boolean isScaling;
-    private boolean isRotating;
+    private AtomicBoolean isScaling;
+    private AtomicBoolean isRotating;
+    private AtomicBoolean isMoving;
     private PanGestureDetector mOwnPanGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isMoving=new AtomicBoolean(false);
+        isRotating= new AtomicBoolean(false);
+        isScaling=new AtomicBoolean(false);
         setContentView(R.layout.activity_main);
         imageView = (ImageView) findViewById(R.id.image);
         imageView.setScaleType(ImageView.ScaleType.MATRIX);
@@ -64,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                mScaleDetector.onTouchEvent(event);
+                if(!isRotating.get() && !isMoving.get())mScaleDetector.onTouchEvent(event);
                 //panDetector.onTouchEvent(event);
-                mOwnPanGestureDetector.onTouchEvent(event);
-                rotationGestureDetector.onTouchEvent(event);
+                if(!isRotating.get() && !isScaling.get())mOwnPanGestureDetector.onTouchEvent(event);
+                if(!isMoving.get() && !isScaling.get())rotationGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
@@ -79,42 +84,63 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
                 scaleImage(scaleFactor, detector.getFocusX(), detector.getFocusY());
                 return true;
             }
+
             @DebugLog
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
-                isScaling=true;
+                isScaling.set(true);
                 return true;
             }
+
             @DebugLog
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
-                isScaling=false;
+                isScaling.set(false);
             }
         });
-        panDetector = new GestureDetectorCompat(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
-            @DebugLog
+//        panDetector = new GestureDetectorCompat(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+//            @DebugLog
+//            @Override
+//            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+//                translateImage(distanceX, distanceY);
+//                return true;
+//            }
+//        });
+        rotationGestureDetector = new RotationGestureDetector(new RotationGestureDetector.OnRotationGestureListener() {
             @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                translateImage(distanceX, distanceY);
-                return true;
+            public void onRotation(RotationGestureDetector rotationDetector) {
+                MainActivity.this.onRotation(rotationDetector);
+            }
+
+            @Override
+            public void onEndRotation() {
+                isRotating.set(false);
+                MainActivity.this.onEndRotation();
+            }
+
+            @Override
+            public void onStartRotation() {
+                isRotating.set(true);
+                MainActivity.this.onStartRotation();
             }
         });
-        rotationGestureDetector = new RotationGestureDetector(MainActivity.this);
-        mOwnPanGestureDetector =new PanGestureDetector(new PanGestureDetector.OnMoveGestureListener() {
+        mOwnPanGestureDetector = new PanGestureDetector(new PanGestureDetector.OnMoveGestureListener() {
             @DebugLog
             @Override
             public void onMove(float distanceX, float distanceY) {
-                translateImage(distanceX,distanceY);
+                translateImage(distanceX, distanceY);
             }
+
             @DebugLog
             @Override
             public void onEndMove() {
-
+                isMoving.set(false);
             }
+
             @DebugLog
             @Override
             public void onStartMove() {
-
+                isMoving.set(true);
             }
         });
     }
@@ -230,13 +256,12 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageviewRetf.right = imageView.getWidth();
         imageviewRetf.bottom = imageView.getHeight();
 
-        RectF intersection=new RectF();
+        RectF intersection = new RectF();
         intersection.set(imageviewRetf);
 
         if (intersection.intersect(rectFDestination)) {
-            return (int) (intersection.bottom-intersection.top);
-        }
-        else return 0;
+            return (int) (intersection.bottom - intersection.top);
+        } else return 0;
     }
 
     private int getWidth() {
@@ -265,13 +290,12 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageviewRetf.right = imageView.getWidth();
         imageviewRetf.bottom = imageView.getHeight();
 
-        RectF intersection=new RectF();
+        RectF intersection = new RectF();
         intersection.set(imageviewRetf);
 
         if (intersection.intersect(rectFDestination)) {
-            return (int) (intersection.right-intersection.left);
-        }
-        else return 0;
+            return (int) (intersection.right - intersection.left);
+        } else return 0;
     }
 
     private int getY() {
@@ -297,14 +321,13 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageviewRetf.right = imageView.getWidth();
         imageviewRetf.bottom = imageView.getHeight();
 
-        RectF modified=new RectF();
+        RectF modified = new RectF();
         modified.set(imageviewRetf);
 
         if (modified.intersect(rectFDestination)) {
-            modified.offset(-rectFDestination.left,-rectFDestination.top);
+            modified.offset(-rectFDestination.left, -rectFDestination.top);
             return (int) modified.top;
-        }
-        else return 0;
+        } else return 0;
 
     }
 
@@ -335,17 +358,16 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         imageviewRetf.right = imageView.getWidth();
         imageviewRetf.bottom = imageView.getHeight();
 
-        RectF modified=new RectF();
+        RectF modified = new RectF();
         modified.set(imageviewRetf);
 
         if (modified.intersect(rectFDestination)) {
-            modified.offset(-rectFDestination.left,-rectFDestination.top);
+            modified.offset(-rectFDestination.left, -rectFDestination.top);
             return (int) modified.left;
-            }
-        else return 0;
+        } else return 0;
     }
+
     @DebugLog
-    @Override
     public void onRotation(RotationGestureDetector rotationDetector) {
         Matrix matrix = imageView.getImageMatrix();
         Matrix rotateMatrixx = new Matrix();
@@ -361,9 +383,7 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
     }
 
     @DebugLog
-    @Override
     public void onEndRotation() {
-        isRotating=false;
         float angle = getCurrentAngle();
         float snapAngle = 0;
         if (angle < 45 && angle >= 0) snapAngle = 0;
@@ -383,10 +403,9 @@ public class MainActivity extends AppCompatActivity implements RotationGestureDe
         displayMatrix.postRotate(-snapAngle, imageView.getWidth() / 2, imageView.getHeight() / 2);
         imageView.setImageMatrix(displayMatrix);
     }
+
     @DebugLog
-    @Override
     public void onStartRotation() {
-        isRotating=false;
         startAngle = getCurrentAngle();
     }
 

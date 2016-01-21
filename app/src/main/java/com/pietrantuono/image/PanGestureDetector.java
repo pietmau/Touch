@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 public class PanGestureDetector {
-    private static final int INVALID = -1;
     private final String TAG = getClass().getSimpleName();
     private float fX, fY, sX, sY;
     private int pointer;
@@ -17,7 +16,7 @@ public class PanGestureDetector {
 
     public PanGestureDetector(OnMoveGestureListener listener) {
         mListener = listener;
-        pointer = INVALID;
+        pointer = MotionEvent.INVALID_POINTER_ID;
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -32,13 +31,13 @@ public class PanGestureDetector {
             case MotionEvent.ACTION_POINTER_DOWN:
                 Log.d(TAG, "ACTION_POINTER_DOWN ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 if (event.getPointerId(event.getActionIndex()) != pointer) {
-                    pointer = INVALID;
+                    pointer = MotionEvent.INVALID_POINTER_ID;
                     onEndMove();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "ACTION_MOVE ,pointer ID = " + event.getPointerId(event.getActionIndex()));
-                if (pointer != INVALID && event.getPointerId(event.getActionIndex())== pointer) {
+                if (pointer != MotionEvent.INVALID_POINTER_ID && event.getPointerId(event.getActionIndex())== pointer) {
                     float newX = event.getX();
                     float newY = event.getY();
 
@@ -53,14 +52,14 @@ public class PanGestureDetector {
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, "ACTION_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 if (event.getPointerId(event.getActionIndex()) != pointer) {
-                    pointer = INVALID;
+                    pointer = MotionEvent.INVALID_POINTER_ID;
                     onEndMove();
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
                 Log.d(TAG, "ACTION_CANCEL ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 if (event.getPointerId(event.getActionIndex()) != pointer) {
-                    pointer = INVALID;
+                    pointer = MotionEvent.INVALID_POINTER_ID;
                     onEndMove();
                 }
                 break;
