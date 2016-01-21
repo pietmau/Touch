@@ -14,6 +14,7 @@ public class MultiGestureDetector {
     private OnRotationGestureListener mListener;
     private boolean isRotating;
     private boolean isScaling;
+    private Angle angle;
 
     public float getAngle() {
         return mAngle;
@@ -23,6 +24,7 @@ public class MultiGestureDetector {
         mListener = listener;
         pointerZero = new Pointer(Pointer.ID_POINTER_ZERO);
         pointerOne = new Pointer(Pointer.ID_POINTER_ONE);
+        angle=new Angle();
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -39,6 +41,7 @@ public class MultiGestureDetector {
                 break;
             case MotionEvent.ACTION_MOVE:
                 updatePointersPosition(event);
+                angle.calulcateAndSet(pointerZero,pointerOne);
                 Log.d(TAG, "ACTION_MOVE ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 if(isTranslate(event)){
                     onTranslate(getTranslationX(event), getTranslationY(event));

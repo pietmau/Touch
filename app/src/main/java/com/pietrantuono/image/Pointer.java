@@ -63,4 +63,20 @@ public class Pointer {
         return "Pointer"+pointerId +": "+ "Current X="+currentX+" Current Y="+currentY+" Previous X="+previousX+" Previous Y="+previousY;
 
     }
+
+    public float getCurrentX() {
+        return currentX;
+    }
+
+    public float getCurrentY() {
+        return currentY;
+    }
+
+    public float getPreviousX() {
+        return previousX;
+    }
+
+    public float getPreviousY() {
+        return previousY;
+    }
 }
