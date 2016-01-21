@@ -8,10 +8,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -37,13 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private float displayedImageWidth;
     private float translateX = 0;
     private float translateY = 0;
-    private GestureDetectorCompat panDetector;
-    private RotationGestureDetector rotationGestureDetector;
     private float startAngle;
     private AtomicBoolean isScaling;
     private AtomicBoolean isRotating;
     private AtomicBoolean isMoving;
-    private PanGestureDetector mOwnPanGestureDetector;
+    private MultiGestureDetector multiGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,80 +65,12 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(!isRotating.get() && !isMoving.get())mScaleDetector.onTouchEvent(event);
-                //panDetector.onTouchEvent(event);
-                if(!isRotating.get() && !isScaling.get())mOwnPanGestureDetector.onTouchEvent(event);
-                if(!isMoving.get() && !isScaling.get())rotationGestureDetector.onTouchEvent(event);
+                multiGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
-        mScaleDetector = new ScaleGestureDetector(MainActivity.this, new ScaleGestureDetector.OnScaleGestureListener() {
-            @DebugLog
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                float scaleFactor = detector.getScaleFactor();
-                scaleImage(scaleFactor, detector.getFocusX(), detector.getFocusY());
-                return true;
-            }
+        multiGestureDetector = new MultiGestureDetector(null);
 
-            @DebugLog
-            @Override
-            public boolean onScaleBegin(ScaleGestureDetector detector) {
-                isScaling.set(true);
-                return true;
-            }
-
-            @DebugLog
-            @Override
-            public void onScaleEnd(ScaleGestureDetector detector) {
-                isScaling.set(false);
-            }
-        });
-//        panDetector = new GestureDetectorCompat(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
-//            @DebugLog
-//            @Override
-//            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-//                translateImage(distanceX, distanceY);
-//                return true;
-//            }
-//        });
-        rotationGestureDetector = new RotationGestureDetector(new RotationGestureDetector.OnRotationGestureListener() {
-            @Override
-            public void onRotation(RotationGestureDetector rotationDetector) {
-                MainActivity.this.onRotation(rotationDetector);
-            }
-
-            @Override
-            public void onEndRotation() {
-                isRotating.set(false);
-                MainActivity.this.onEndRotation();
-            }
-
-            @Override
-            public void onStartRotation() {
-                isRotating.set(true);
-                MainActivity.this.onStartRotation();
-            }
-        });
-        mOwnPanGestureDetector = new PanGestureDetector(new PanGestureDetector.OnMoveGestureListener() {
-            @DebugLog
-            @Override
-            public void onMove(float distanceX, float distanceY) {
-                translateImage(distanceX, distanceY);
-            }
-
-            @DebugLog
-            @Override
-            public void onEndMove() {
-                isMoving.set(false);
-            }
-
-            @DebugLog
-            @Override
-            public void onStartMove() {
-                isMoving.set(true);
-            }
-        });
     }
 
     @DebugLog
@@ -368,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @DebugLog
-    public void onRotation(RotationGestureDetector rotationDetector) {
+    public void onRotation(MultiGestureDetector rotationDetector) {
         Matrix matrix = imageView.getImageMatrix();
         Matrix rotateMatrixx = new Matrix();
         rotateMatrixx.set(matrix);
