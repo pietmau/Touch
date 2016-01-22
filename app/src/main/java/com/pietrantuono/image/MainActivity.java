@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                multiGestureDetector.onTouchEvent(event);
+                if(eventIsOnBitmap(event))multiGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
@@ -94,6 +94,27 @@ public class MainActivity extends AppCompatActivity {
                 onEndRotation();
             }
         });
+
+    }
+
+    private boolean eventIsOnBitmap(MotionEvent event) {
+        Matrix matrix=imageView.getImageMatrix();
+        Matrix temp = new Matrix();
+        temp.set(matrix);
+        float[] f = new float[9];
+        temp.getValues(f);
+        RectF rectFSource = new RectF();
+        RectF rectFDestination = new RectF();
+        rectFSource.top = 0;
+        rectFSource.left = 0;
+        rectFSource.right = imageView.getDrawable().getIntrinsicWidth();
+        rectFSource.bottom = imageView.getDrawable().getIntrinsicHeight();
+        Matrix imagemaxtrix = imageView.getImageMatrix();//;
+        Matrix matrix1 = new Matrix();
+        matrix1.set(imagemaxtrix);
+        matrix1.mapRect(rectFDestination, rectFSource);
+
+        return rectFDestination.contains(event.getX(),event.getY());
 
     }
 
