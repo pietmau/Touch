@@ -10,6 +10,6 @@ public interface MultiGestureDetectorListener {
 
     void onScale(float currentScale);
 
-    void ooRotationEnd();
+    void onRotationEnd();
 
 }

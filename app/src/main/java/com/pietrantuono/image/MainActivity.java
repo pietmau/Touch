@@ -24,6 +24,7 @@ import hugo.weaving.DebugLog;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1;
+    private static final float NO_ROTATION = -720;
     ImageView imageView;
     Bitmap bitmap;
     private ScaleGestureDetector mScaleDetector;
@@ -35,11 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private float displayedImageWidth;
     private float translateX = 0;
     private float translateY = 0;
-    private float startAngle;
+    private float startAngle=NO_ROTATION;
     private AtomicBoolean isScaling;
     private AtomicBoolean isRotating;
     private AtomicBoolean isMoving;
     private MultiGestureDetector multiGestureDetector;
+    private float previousPivotX;
+    private float previousPivotY;
+    private float previousAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onRotate(float currentAngle, float currentPivotX, float currentPivotY) {
-
+                rotateImage(currentAngle,currentPivotX,currentPivotY);
             }
 
             @Override
@@ -86,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void ooRotationEnd() {
-
+            public void onRotationEnd() {
+                onEndRotation();
             }
         });
 
@@ -316,23 +320,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @DebugLog
-    public void onRotation(MultiGestureDetector rotationDetector) {
+    public void rotateImage(float currentAngle, float currentPivotX, float currentPivotY) {
         Matrix matrix = imageView.getImageMatrix();
         Matrix rotateMatrixx = new Matrix();
         rotateMatrixx.set(matrix);
-        rotateMatrixx.postRotate(getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
-        imageView.setImageMatrix(rotateMatrixx);
+        rotateMatrixx.postRotate(-previousAngle, previousPivotX, previousPivotY);
+        //if(previousAngle!=NO_ROTATION)imageView.setImageMatrix(rotateMatrixx);
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        float rotationAngle = rotationDetector.getAngle() + startAngle;
-        displayMatrix.postRotate(-rotationAngle, imageView.getWidth() / 2, imageView.getHeight() / 2);
+        //float rotationAngle = currentAngle + startAngle;
+        displayMatrix.postRotate(currentAngle, currentPivotX, currentPivotY);
         imageView.setImageMatrix(displayMatrix);
+        previousPivotX=currentPivotX;
+        previousPivotY=currentPivotY;
+        previousAngle=currentAngle;
     }
 
     @DebugLog
     public void onEndRotation() {
-        float angle = getCurrentAngle();
+        float angle = previousAngle;
+        if(true){
+            previousAngle=NO_ROTATION;
+            return;
+        }
         float snapAngle = 0;
         if (angle < 45 && angle >= 0) snapAngle = 0;
         else if (angle < 135 && angle >= 45) snapAngle = 90;
@@ -343,19 +354,17 @@ public class MainActivity extends AppCompatActivity {
         Matrix matrix = imageView.getImageMatrix();
         Matrix rotateMatrixx = new Matrix();
         rotateMatrixx.set(matrix);
-        rotateMatrixx.postRotate(getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
+        rotateMatrixx.postRotate(-previousAngle, previousPivotX, previousPivotY);
         imageView.setImageMatrix(rotateMatrixx);
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postRotate(-snapAngle, imageView.getWidth() / 2, imageView.getHeight() / 2);
+        displayMatrix.postRotate(-snapAngle, previousPivotX, previousPivotY);
         imageView.setImageMatrix(displayMatrix);
+        previousAngle=NO_ROTATION;
     }
 
-    @DebugLog
-    public void onStartRotation() {
-        startAngle = getCurrentAngle();
-    }
+
 
     public float getCurrentAngle() {
         Matrix matrix = imageView.getImageMatrix();

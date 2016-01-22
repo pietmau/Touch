@@ -11,7 +11,6 @@ public class MultiGestureDetector {
     private Pointer pointerOne;
     private Pointer pointerZero;
     private float mAngle;
-    private OnRotationGestureListener mListener;
     private boolean isRotating;
     private boolean isScaling;
     private Angle angle;
@@ -55,7 +54,7 @@ public class MultiGestureDetector {
                     if(listener!=null)listener.onTranslate(getTranslationX(), getTranslationY());
                 }
                 if(isRotation()){
-                    if(listener!=null)listener.onRotate(angle.getCurrentAngle(), angle.getCurrentPivotX(), angle.getCurrentPivotY());
+                    if(listener!=null)listener.onRotate(angle.getDeltaAngle(), angle.getCurrentPivotX(), angle.getCurrentPivotY());
                 }
                 if(isScale()){
                     if(listener!=null)listener.onScale(scale.getCurrentScale());
@@ -67,28 +66,28 @@ public class MultiGestureDetector {
                 updatePointers(event);
                 updatePointersPosition(event);
                 updateGeometry();
-                if(listener!=null)listener.ooRotationEnd();
+                if(listener!=null)listener.onRotationEnd();
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 Log.d(TAG, "ACTION_POINTER_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
                 updateGeometry();
-                if(listener!=null)listener.ooRotationEnd();
+                if(listener!=null)listener.onRotationEnd();
                 break;
             case MotionEvent.ACTION_CANCEL:
                 Log.d(TAG, "ACTION_CANCEL ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
                 updateGeometry();
-                if(listener!=null)listener.ooRotationEnd();
+                if(listener!=null)listener.onRotationEnd();
                 break;
         }
         return true;
     }
 
     private void updateGeometry() {
-        angle.calulcateAndSet(pointerZero,pointerOne);
+        angle.calulcateAndSet(pointerZero, pointerOne);
         scale.calcuateAndSet(pointerZero, pointerOne);
 
     }
@@ -153,44 +152,15 @@ public class MultiGestureDetector {
     private boolean isTranslate() {
         return pointerZero.isValid() && !pointerOne.isValid();
     }
-    @DebugLog
-    private void onScale(float scale) {
-
-    }
-
-    private float getScale(MotionEvent event) {
-        return 0;
-    }
 
     private boolean isScale() {
         if(!pointerOne.isValid() || !pointerZero.isValid())return false;
         return true;
     }
-    @DebugLog
-    private void onRotate(float angle, float centerX, float centerY) {
-
-    }
-
-    private float getCenterY(MotionEvent event) {
-        return 0;
-
-    }
-
-    private float getCenterX(MotionEvent event) {
-        return 0;
-    }
-
-    private float getAngle(MotionEvent event) {
-        return 0;
-    }
 
     private boolean isRotation() {
         if(!pointerOne.isValid() || !pointerZero.isValid())return false;
         return true;
-    }
-    @DebugLog
-    private void onTranslate(float translationX, float translationY) {
-
     }
 
     private float getTranslationY() {
@@ -201,29 +171,4 @@ public class MultiGestureDetector {
         return -(pointerZero.getCurrentX()-pointerZero.getPreviousX());
     }
 
-    private void cancel(MotionEvent event) {
-
-
-    }
-
-
-
-
-    private void onEndRotation() {
-
-    }
-
-    private void onStartRotation() {
-
-    }
-
-
-
-    public static interface OnRotationGestureListener {
-        public void onRotation(MultiGestureDetector rotationDetector);
-
-        public void onEndRotation();
-
-        public void onStartRotation();
-    }
 } 
