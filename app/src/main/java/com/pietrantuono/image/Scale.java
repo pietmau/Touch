@@ -18,8 +18,11 @@ public class Scale {
     private float previousDistance;
 
     private float currentScale;
+    private float previousScale;
 
     private float initialDistance;
+    private float currentPivotY;
+    private float currentPivotX;
 
     public Scale calcuateAndSet(Pointer pointerZero, Pointer pointerOne) {
         if (!pointerOne.isValid() || !pointerOne.isValid()) {
@@ -39,14 +42,17 @@ public class Scale {
         previousDistance=currentDistance;
         currentDistance=calculateDistance();
         if(initialDistance==0)initialDistance=currentDistance;
+        previousScale=currentScale;
         currentScale=calculateScale();
+
+        currentPivotX=pointerZero.getCurrentX()+(pointerOne.getCurrentX()-pointerZero.getCurrentX());
+        currentPivotY=pointerZero.getCurrentY()+(pointerOne.getCurrentY()-pointerZero.getCurrentY());
 
         return this;
     }
 
     private float calculateScale() {
         return currentDistance/initialDistance;
-
     }
 
     private float calculateDistance() {
@@ -79,6 +85,19 @@ public class Scale {
 
     public float getCurrentScale() {
         return currentScale;
+    }
+
+    public float getCurrentPivotX() {
+        return currentPivotX;
+    }
+
+    public float getCurrentPivotY() {
+        return currentPivotY;
+    }
+
+    public float getScaleDelta(){
+        if(previousScale==0)return 1;
+        return 1+(currentScale-previousScale);
     }
 }
 

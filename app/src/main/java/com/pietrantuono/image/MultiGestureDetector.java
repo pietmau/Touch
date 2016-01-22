@@ -57,7 +57,7 @@ public class MultiGestureDetector {
                     if(listener!=null)listener.onRotate(angle.getDeltaAngle(), angle.getCurrentPivotX(), angle.getCurrentPivotY());
                 }
                 if(isScale()){
-                    if(listener!=null)listener.onScale(scale.getCurrentScale());
+                    if(listener!=null)listener.onScale(scale.getScaleDelta(),scale.getCurrentPivotX(),scale.getCurrentPivotY());
                 }
 
                 break;

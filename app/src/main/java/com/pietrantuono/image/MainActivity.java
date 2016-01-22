@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onScale(float currentScale) {
-
+            public void onScale(float currentScale, float currentPivotX, float currentPivotY) {
+                    scaleImage(currentScale,currentPivotX,currentPivotY);
             }
 
             @Override
@@ -108,18 +108,19 @@ public class MainActivity extends AppCompatActivity {
     @DebugLog
     private void scaleImage(float scaleFactor, float focusX, float focusY) {
         matrix = imageView.getImageMatrix();
+        Matrix displayMatrix= new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postTranslate(-translateX, -translateY);
-        displayMatrix.postScale(scaleFactor, scaleFactor);
-        float[] f = new float[9];
-        displayMatrix.getValues(f);
-        float scaleX = f[Matrix.MSCALE_X];
-        float scaleY = f[Matrix.MSCALE_Y];
-        displayedImageWidth = imageWidth * scaleX;
-        displayedImageHeigth = imageHeight * scaleY;
-        translateX = (imageView.getWidth() - displayedImageWidth) / 2;
-        translateY = (imageView.getHeight() - displayedImageHeigth) / 2;
-        displayMatrix.postTranslate(translateX, translateY);
+        displayMatrix.postScale(scaleFactor, scaleFactor,focusX,focusY);
+//        displayMatrix.postTranslate(-translateX, -translateY);
+//        float[] f = new float[9];
+//        displayMatrix.getValues(f);
+//        float scaleX = f[Matrix.MSCALE_X];
+//        float scaleY = f[Matrix.MSCALE_Y];
+//        displayedImageWidth = imageWidth * scaleX;
+//        displayedImageHeigth = imageHeight * scaleY;
+//        translateX = (imageView.getWidth() - displayedImageWidth) / 2;
+//        translateY = (imageView.getHeight() - displayedImageHeigth) / 2;
+//        displayMatrix.postTranslate(translateX, translateY);
         imageView.setImageMatrix(displayMatrix);
     }
 

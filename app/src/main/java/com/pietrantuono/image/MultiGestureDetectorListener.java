@@ -8,7 +8,7 @@ public interface MultiGestureDetectorListener {
 
     void onRotate(float currentAngle, float currentPivotX, float currentPivotY);
 
-    void onScale(float currentScale);
+    void onScale(float currentScale, float currentPivotX, float currentPivotY);
 
     void onRotationEnd();
 

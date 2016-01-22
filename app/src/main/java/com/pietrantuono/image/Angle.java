@@ -13,7 +13,6 @@ public class Angle {
     private float currentPivotY;
     private final static float INVALID_ANGLE=-720;
 
-
     public Angle() {
         reset();
     }
@@ -27,12 +26,7 @@ public class Angle {
         currentPivotX=pointerZero.getCurrentX()+(pointerOne.getCurrentX()-pointerZero.getCurrentX());
         currentPivotY=pointerZero.getCurrentY()+(pointerOne.getCurrentY()-pointerZero.getCurrentY());
         float angle1 = (float) Math.atan2((pointerZero.getCurrentY() - pointerOne.getCurrentY()), (pointerZero.getCurrentX() - pointerOne.getCurrentX()));
-        //float angle = ((float) Math.toDegrees(angle1) % 360);
         float angle = (float) Math.toDegrees(angle1);
-//        if(angle < 0){
-//            angle += 360;
-//        }
-        Log.d(TAG, "Calcualted angle "+angle);
         currentAngle = angle;
         if (angle < -180.f) currentAngle += 360.0f;
         if (angle > 180.f) currentAngle -= 360.0f;
@@ -50,11 +44,6 @@ public class Angle {
         currentPivotX=0;
         currentPivotY=0;
     }
-
-    public float getCurrentAngle() {
-        return currentAngle;
-    }
-
     public float getCurrentPivotX() {
         return currentPivotX;
     }
