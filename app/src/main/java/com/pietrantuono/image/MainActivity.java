@@ -69,7 +69,27 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        multiGestureDetector = new MultiGestureDetector(null);
+        multiGestureDetector = new MultiGestureDetector(new MultiGestureDetectorListener() {
+            @Override
+            public void onTranslate(float translationX, float translationY) {
+                translateImage(translationX,translationY);
+            }
+
+            @Override
+            public void onRotate(float currentAngle, float currentPivotX, float currentPivotY) {
+
+            }
+
+            @Override
+            public void onScale(float currentScale) {
+
+            }
+
+            @Override
+            public void ooRotationEnd() {
+
+            }
+        });
 
     }
 
