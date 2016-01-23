@@ -67,7 +67,7 @@ public class MultiGestureDetector {
                 Log.d(TAG, "ACTION_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
-                if(!eventIsOnBitmap(event))break;
+                //if(!eventIsOnBitmap(event))break;
                 updateGeometry();
                 //if(listener!=null)listener.onRotationEnd();
                 break;
@@ -77,7 +77,7 @@ public class MultiGestureDetector {
                 updatePointersPosition(event);
                 if(listener!=null)listener.onRotationEnd();
 
-                if(!eventIsOnBitmap(event))break;
+                //if(!eventIsOnBitmap(event))break;
                 updateGeometry();
                 break;
             case MotionEvent.ACTION_CANCEL:
