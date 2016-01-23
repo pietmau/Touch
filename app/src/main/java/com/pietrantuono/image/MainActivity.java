@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postRotate(currentDeltaAngle, currentPivotX, currentPivotY);
+        displayMatrix.postRotate(currentDeltaAngle, getImageViewCetnerX(), getImageViewCenterY());
         imageView.setImageMatrix(displayMatrix);
         previousPivotX = currentPivotX;
         previousPivotY = currentPivotY;
@@ -311,12 +311,12 @@ public class MainActivity extends AppCompatActivity {
         Matrix matrix = imageView.getImageMatrix();
         Matrix rotateMatrixx = new Matrix();
         rotateMatrixx.set(matrix);
-        rotateMatrixx.postRotate(-previousAngle, previousPivotX, previousPivotY);
+        rotateMatrixx.postRotate(-previousAngle, getImageViewCetnerX(), getImageViewCenterY());
         imageView.setImageMatrix(rotateMatrixx);
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postRotate(snapAngle, previousPivotX, previousPivotY);
+        displayMatrix.postRotate(snapAngle, getImageViewCetnerX(), getImageViewCenterY());
         imageView.setImageMatrix(displayMatrix);
         previousAngle = 0;
     }
@@ -330,5 +330,22 @@ public class MainActivity extends AppCompatActivity {
         temp.getValues(f);
         float rAngle = (float) (Math.atan2(f[Matrix.MSKEW_X], f[Matrix.MSCALE_X]) * (180 / Math.PI));
         return rAngle;
+    }
+
+    private float getImageViewCetnerX(){
+        RectF imageviewRetf = new RectF();
+        imageviewRetf.top = 0;
+        imageviewRetf.left = 0;
+        imageviewRetf.right = imageView.getWidth();
+        imageviewRetf.bottom = imageView.getHeight();
+        return imageviewRetf.centerX();
+    }
+    private float getImageViewCenterY(){
+        RectF imageviewRetf = new RectF();
+        imageviewRetf.top = 0;
+        imageviewRetf.left = 0;
+        imageviewRetf.right = imageView.getWidth();
+        imageviewRetf.bottom = imageView.getHeight();
+        return imageviewRetf.centerY();
     }
 }
