@@ -6,9 +6,9 @@ package com.pietrantuono.image;
 public interface MultiGestureDetectorListener {
     void onTranslate(float translationX, float translationY);
 
-    void onRotate(float currentAngle, float currentPivotX, float currentPivotY);
+    void onRotate(float deltaAngle, float currentPivotX, float currentPivotY);
 
-    void onScale(float currentScale, float currentPivotX, float currentPivotY);
+    void onScale(float deltaScale, float currentPivotX, float currentPivotY);
 
     void onRotationEnd();
 

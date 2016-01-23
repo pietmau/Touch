@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -18,13 +19,13 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import hugo.weaving.DebugLog;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1;
     private static final float NO_ROTATION = -720;
+    private final String TAG = getClass().getSimpleName();
     ImageView imageView;
     Bitmap bitmap;
     private ScaleGestureDetector mScaleDetector;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (eventIsOnBitmap(event)) multiGestureDetector.onTouchEvent(event);
+                multiGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
@@ -71,41 +72,24 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onRotate(float currentAngle, float currentPivotX, float currentPivotY) {
-                rotateImage(currentAngle, currentPivotX, currentPivotY);
+            public void onRotate(float deltaAngle, float currentPivotX, float currentPivotY) {
+                rotateImage(deltaAngle, currentPivotX, currentPivotY);
             }
 
             @Override
-            public void onScale(float currentScale, float currentPivotX, float currentPivotY) {
-                scaleImage(currentScale, currentPivotX, currentPivotY);
+            public void onScale(float deltaScale, float currentPivotX, float currentPivotY) {
+                scaleImage(deltaScale, currentPivotX, currentPivotY);
             }
 
             @Override
             public void onRotationEnd() {
                 onEndRotation();
             }
-        });
+        },imageView);
 
     }
 
-    private boolean eventIsOnBitmap(MotionEvent event) {
-        Matrix matrix = imageView.getImageMatrix();
-        Matrix temp = new Matrix();
-        temp.set(matrix);
-        RectF rectFSource = new RectF();
-        RectF rectFDestination = new RectF();
-        rectFSource.top = 0;
-        rectFSource.left = 0;
-        rectFSource.right = imageView.getDrawable().getIntrinsicWidth();
-        rectFSource.bottom = imageView.getDrawable().getIntrinsicHeight();
-        Matrix imagemaxtrix = imageView.getImageMatrix();//;
-        Matrix matrix1 = new Matrix();
-        matrix1.set(imagemaxtrix);
-        matrix1.mapRect(rectFDestination, rectFSource);
 
-        return rectFDestination.contains(event.getX(), event.getY());
-
-    }
 
     @DebugLog
     private void translateImage(float distanceX, float distanceY) {
@@ -299,28 +283,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @DebugLog
-    public void rotateImage(float currentAngle, float currentPivotX, float currentPivotY) {
+    public void rotateImage(float currentDeltaAngle, float currentPivotX, float currentPivotY) {
         Matrix matrix = imageView.getImageMatrix();
         Matrix rotateMatrixx = new Matrix();
         rotateMatrixx.set(matrix);
-        rotateMatrixx.postRotate(-previousAngle, previousPivotX, previousPivotY);
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postRotate(currentAngle, currentPivotX, currentPivotY);
+        displayMatrix.postRotate(currentDeltaAngle, currentPivotX, currentPivotY);
         imageView.setImageMatrix(displayMatrix);
         previousPivotX = currentPivotX;
         previousPivotY = currentPivotY;
-        previousAngle = currentAngle;
+        previousAngle += currentDeltaAngle;
     }
 
     @DebugLog
     public void onEndRotation() {
         float angle = previousAngle;
-        if (true) {
-            previousAngle = NO_ROTATION;
-            return;
-        }
+        Log.d(TAG, "previousAngle = "+previousAngle );
         float snapAngle = 0;
         if (angle < 45 && angle >= 0) snapAngle = 0;
         else if (angle < 135 && angle >= 45) snapAngle = 90;
@@ -336,9 +316,9 @@ public class MainActivity extends AppCompatActivity {
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postRotate(-snapAngle, previousPivotX, previousPivotY);
+        displayMatrix.postRotate(snapAngle, previousPivotX, previousPivotY);
         imageView.setImageMatrix(displayMatrix);
-        previousAngle = NO_ROTATION;
+        previousAngle = 0;
     }
 
 
