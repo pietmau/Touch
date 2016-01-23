@@ -1,7 +1,10 @@
 package com.pietrantuono.image;
 
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.ImageView;
 
 import hugo.weaving.DebugLog;
 
@@ -16,13 +19,11 @@ public class MultiGestureDetector {
     private Angle angle;
     private Scale scale;
     private MultiGestureDetectorListener listener;
+    private ImageView imageView;
 
-    public float getAngle() {
-        return mAngle;
-    }
-
-    public MultiGestureDetector(MultiGestureDetectorListener listener) {
+    public MultiGestureDetector(MultiGestureDetectorListener listener, ImageView imageView) {
         this.listener = listener;
+        this.imageView = imageView;
         pointerZero = new Pointer(Pointer.ID_POINTER_ZERO);
         pointerOne = new Pointer(Pointer.ID_POINTER_ONE);
         angle=new Angle();
@@ -44,6 +45,7 @@ public class MultiGestureDetector {
             case MotionEvent.ACTION_MOVE:
                 updatePointers(event);
                 updatePointersPosition(event);
+                if(!eventIsOnBitmap(event))break;
                 updateGeometry();
 
                 Log.d(TAG, "ACTION_MOVE ,pointer ID = " + event.getPointerId(event.getActionIndex()));
@@ -65,15 +67,18 @@ public class MultiGestureDetector {
                 Log.d(TAG, "ACTION_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
+                //if(!eventIsOnBitmap(event))break;
                 updateGeometry();
-                if(listener!=null)listener.onRotationEnd();
+                //if(listener!=null)listener.onRotationEnd();
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 Log.d(TAG, "ACTION_POINTER_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
-                updateGeometry();
                 if(listener!=null)listener.onRotationEnd();
+
+                //if(!eventIsOnBitmap(event))break;
+                updateGeometry();
                 break;
             case MotionEvent.ACTION_CANCEL:
                 Log.d(TAG, "ACTION_CANCEL ,pointer ID = " + event.getPointerId(event.getActionIndex()));
@@ -98,8 +103,8 @@ public class MultiGestureDetector {
 
         if(pointerZero.isValid()) pointerZero.setCurrentY(event.getY(event.findPointerIndex(pointerZero.getPointerId())));
         if(pointerOne.isValid()) pointerOne.setCurrentY(event.getY(event.findPointerIndex(pointerOne.getPointerId())));
-        Log.d(TAG,pointerZero.toString());
-        Log.d(TAG,pointerOne.toString());
+        Log.d(TAG, pointerZero.toString());
+        Log.d(TAG, pointerOne.toString());
     }
 
     @DebugLog
@@ -171,4 +176,23 @@ public class MultiGestureDetector {
         return -(pointerZero.getCurrentX()-pointerZero.getPreviousX());
     }
 
+
+    private boolean eventIsOnBitmap(MotionEvent event) {
+        Matrix matrix = imageView.getImageMatrix();
+        Matrix temp = new Matrix();
+        temp.set(matrix);
+        RectF rectFSource = new RectF();
+        RectF rectFDestination = new RectF();
+        rectFSource.top = 0;
+        rectFSource.left = 0;
+        rectFSource.right = imageView.getDrawable().getIntrinsicWidth();
+        rectFSource.bottom = imageView.getDrawable().getIntrinsicHeight();
+        Matrix imagemaxtrix = imageView.getImageMatrix();//;
+        Matrix matrix1 = new Matrix();
+        matrix1.set(imagemaxtrix);
+        matrix1.mapRect(rectFDestination, rectFSource);
+
+        return rectFDestination.contains(event.getX(), event.getY());
+
+    }
 } 
