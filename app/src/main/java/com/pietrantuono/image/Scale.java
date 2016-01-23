@@ -6,16 +6,11 @@ package com.pietrantuono.image;
 public class Scale {
     private float pointerZeroCurrentX;
     private float pointerZeroCurrentY;
-    private float pointerZeroPreviousX;
-    private float pointerZeroPreviousY;
 
     private float pointerOneCurrentX;
     private float pointerOneCurrentY;
-    private float pointerOnePreviousX;
-    private float pointerOnePreviousY;
-    
+
     private float currentDistance;
-    private float previousDistance;
 
     private float currentScale;
     private float previousScale;
@@ -29,62 +24,48 @@ public class Scale {
             reset();
             return this;
         }
-        pointerOnePreviousX=pointerOneCurrentX;
-        pointerOnePreviousY=pointerOneCurrentY;
-        pointerZeroPreviousX=pointerZeroCurrentX;
-        pointerOnePreviousY=pointerZeroCurrentY;
 
-        pointerOneCurrentX=pointerOne.getCurrentX();
-        pointerOneCurrentY=pointerOne.getCurrentY();
-        pointerZeroCurrentX=pointerZero.getCurrentX();
-        pointerZeroCurrentY=pointerZero.getCurrentY();
+        pointerOneCurrentX = pointerOne.getCurrentX();
+        pointerOneCurrentY = pointerOne.getCurrentY();
+        pointerZeroCurrentX = pointerZero.getCurrentX();
+        pointerZeroCurrentY = pointerZero.getCurrentY();
 
-        previousDistance=currentDistance;
-        currentDistance=calculateDistance();
-        if(initialDistance==0)initialDistance=currentDistance;
-        previousScale=currentScale;
-        currentScale=calculateScale();
+        currentDistance = calculateDistance();
+        if (initialDistance == 0) initialDistance = currentDistance;
+        previousScale = currentScale;
+        currentScale = calculateScale();
 
-        currentPivotX=pointerZero.getCurrentX()+(pointerOne.getCurrentX()-pointerZero.getCurrentX());
-        currentPivotY=pointerZero.getCurrentY()+(pointerOne.getCurrentY()-pointerZero.getCurrentY());
+        currentPivotX = pointerZero.getCurrentX() + (pointerOne.getCurrentX() - pointerZero.getCurrentX());
+        currentPivotY = pointerZero.getCurrentY() + (pointerOne.getCurrentY() - pointerZero.getCurrentY());
 
         return this;
     }
 
     private float calculateScale() {
-        return currentDistance/initialDistance;
+        return currentDistance / initialDistance;
     }
 
     private float calculateDistance() {
         double x = Math.pow((pointerOneCurrentX - pointerZeroCurrentX), 2);
         double y = Math.pow((pointerOneCurrentY - pointerZeroCurrentY), 2);
-        return (float) Math.sqrt(x+y);
+        return (float) Math.sqrt(x + y);
     }
 
     @Override
     public String toString() {
-        return " Distance =" + currentDistance+", Scale= "+currentScale;
+        return " Distance =" + currentDistance + ", Scale= " + currentScale;
     }
 
     public void reset() {
-         pointerZeroCurrentX=0;
-         pointerZeroCurrentY=0;
-         pointerZeroPreviousX=0;
-         pointerZeroPreviousY=0;
+        pointerZeroCurrentX = 0;
+        pointerZeroCurrentY = 0;
 
-         pointerOneCurrentX=0;
-         pointerOneCurrentY=0;
-         pointerOnePreviousX=0;
-         pointerOnePreviousY=0;
+        pointerOneCurrentX = 0;
+        pointerOneCurrentY = 0;
 
-         currentDistance=0;
-         previousDistance=0;
+        currentDistance = 0;
 
-         currentScale=0;
-    }
-
-    public float getCurrentScale() {
-        return currentScale;
+        currentScale = 0;
     }
 
     public float getCurrentPivotX() {
@@ -95,9 +76,9 @@ public class Scale {
         return currentPivotY;
     }
 
-    public float getScaleDelta(){
-        if(previousScale==0)return 1;
-        return 1+(currentScale-previousScale);
+    public float getScaleDelta() {
+        if (previousScale == 0) return 1;
+        return 1 + (currentScale - previousScale);
     }
 }
 

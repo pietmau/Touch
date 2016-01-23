@@ -9,13 +9,9 @@ import android.widget.ImageView;
 import hugo.weaving.DebugLog;
 
 public class MultiGestureDetector {
-    private static final int INVALID_POINTER_ID = -1;
     private  final String TAG = getClass().getSimpleName();
     private Pointer pointerOne;
     private Pointer pointerZero;
-    private float mAngle;
-    private boolean isRotating;
-    private boolean isScaling;
     private Angle angle;
     private Scale scale;
     private MultiGestureDetectorListener listener;
@@ -67,18 +63,14 @@ public class MultiGestureDetector {
                 Log.d(TAG, "ACTION_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
-                //if(!eventIsOnBitmap(event))break;
                 updateGeometry();
-                //if(listener!=null)listener.onRotationEnd();
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 Log.d(TAG, "ACTION_POINTER_UP ,pointer ID = " + event.getPointerId(event.getActionIndex()));
                 updatePointers(event);
                 updatePointersPosition(event);
                 if(listener!=null)listener.onRotationEnd();
-
-                //if(!eventIsOnBitmap(event))break;
-                updateGeometry();
+               updateGeometry();
                 break;
             case MotionEvent.ACTION_CANCEL:
                 Log.d(TAG, "ACTION_CANCEL ,pointer ID = " + event.getPointerId(event.getActionIndex()));
@@ -191,7 +183,6 @@ public class MultiGestureDetector {
         Matrix matrix1 = new Matrix();
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
-
         return rectFDestination.contains(event.getX(), event.getY());
 
     }
