@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         multiGestureDetector = new MultiGestureDetector(new MultiGestureDetectorListener() {
             @Override
             public void onTranslate(float translationX, float translationY) {
-                //translateImage(translationX, translationY);
+                translateImage(translationX, translationY);
             }
 
             @Override
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onScale(float deltaScale, float currentPivotX, float currentPivotY) {
-                //scaleImage(deltaScale, currentPivotX, currentPivotY);
+                scaleImage(deltaScale, currentPivotX, currentPivotY);
             }
 
             @Override
