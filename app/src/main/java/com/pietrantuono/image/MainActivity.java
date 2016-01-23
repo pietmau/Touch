@@ -111,35 +111,32 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     Uri selectedImage = data.getData();
                     try {
-                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                        imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage));
                     } catch (IOException e) {
                     }
-                    imageView.setImageBitmap(bitmap);
                     imageWidth = imageView.getDrawable().getIntrinsicWidth();
                     imageHeight = imageView.getDrawable().getIntrinsicHeight();
                     RectF drawableRect = new RectF(0, 0, imageWidth, imageHeight);
                     RectF viewRect = new RectF(0, 0, imageView.getWidth(), imageView.getHeight());
 
-                    //RectF destination = new RectF();
-
                     if (drawableRect.width() > drawableRect.height())
                     //Bitmap is landscape
                     {
-                        float scale=viewRect.height()/drawableRect.height();
+                        float scale = viewRect.height() / drawableRect.height();
                         Matrix matrix = new Matrix();
-                        //matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
                         matrix.postScale(scale, scale);
-                        RectF destination =new RectF();
-                        matrix.mapRect(destination,drawableRect);
-                        matrix.postTranslate(-destination.width()/2+viewRect.width()/2,0);
+                        RectF destination = new RectF();
+                        matrix.mapRect(destination, drawableRect);
+                        matrix.postTranslate(-destination.width() / 2 + viewRect.width() / 2, 0);
                         imageView.setImageMatrix(matrix);
-
                     }
                     //Bitmap is portrait
                     else {
+                        float scale = viewRect.width() / drawableRect.width();
+                        Matrix matrix = new Matrix();
+                        matrix.postScale(scale, scale);
+                        imageView.setImageMatrix(matrix);
                     }
-
-
                 }
         }
     }
