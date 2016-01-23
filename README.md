@@ -15,6 +15,6 @@ Need to be completed:
  - ~~fix bug save image if panned (in some cases)~~**FIXED!**
  - ~~make sure different gestures (pan/zoom/rotate) don’t conflict,~~**FIXED!**
  - ~~rotation of the image on the center of the image itself (now rotates on the center of the ImageView),~~ ~~**FIXED!**~~ **UPDATED: it's better if image rotates around center of the viewfinder, reverting to original**
- - initial setup of the image depending on dimensions,
+ - ~~initial setup of the image depending on dimensions,~~ **DONE!**
  - memory management,
  - 1819x1382 pixels aspect ratio.
