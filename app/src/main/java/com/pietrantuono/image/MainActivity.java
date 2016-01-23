@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1;
     private final String TAG = getClass().getSimpleName();
     ImageView imageView;
-    Bitmap bitmap;
     private int imageHeight;
     private int imageWidth;
     private MultiGestureDetector multiGestureDetector;
@@ -158,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             FileOutputStream out = new FileOutputStream(file);
             croppedbitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            croppedbitmap.recycle();
             out.flush();
             out.close();
         } catch (Exception e) {
