@@ -34,12 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private Matrix displayMatrix;
     private float displayedImageHeigth;
     private float displayedImageWidth;
-    private float translateX = 0;
-    private float translateY = 0;
-    private float startAngle=NO_ROTATION;
-    private AtomicBoolean isScaling;
-    private AtomicBoolean isRotating;
-    private AtomicBoolean isMoving;
     private MultiGestureDetector multiGestureDetector;
     private float previousPivotX;
     private float previousPivotY;
@@ -48,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isMoving=new AtomicBoolean(false);
-        isRotating= new AtomicBoolean(false);
-        isScaling=new AtomicBoolean(false);
         setContentView(R.layout.activity_main);
         imageView = (ImageView) findViewById(R.id.image);
         imageView.setScaleType(ImageView.ScaleType.MATRIX);
@@ -69,24 +60,24 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(eventIsOnBitmap(event))multiGestureDetector.onTouchEvent(event);
+                if (eventIsOnBitmap(event)) multiGestureDetector.onTouchEvent(event);
                 return true;
             }
         });
         multiGestureDetector = new MultiGestureDetector(new MultiGestureDetectorListener() {
             @Override
             public void onTranslate(float translationX, float translationY) {
-                translateImage(translationX,translationY);
+                translateImage(translationX, translationY);
             }
 
             @Override
             public void onRotate(float currentAngle, float currentPivotX, float currentPivotY) {
-                rotateImage(currentAngle,currentPivotX,currentPivotY);
+                rotateImage(currentAngle, currentPivotX, currentPivotY);
             }
 
             @Override
             public void onScale(float currentScale, float currentPivotX, float currentPivotY) {
-                    scaleImage(currentScale,currentPivotX,currentPivotY);
+                scaleImage(currentScale, currentPivotX, currentPivotY);
             }
 
             @Override
@@ -98,11 +89,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean eventIsOnBitmap(MotionEvent event) {
-        Matrix matrix=imageView.getImageMatrix();
+        Matrix matrix = imageView.getImageMatrix();
         Matrix temp = new Matrix();
         temp.set(matrix);
-        float[] f = new float[9];
-        temp.getValues(f);
         RectF rectFSource = new RectF();
         RectF rectFDestination = new RectF();
         rectFSource.top = 0;
@@ -114,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         matrix1.set(imagemaxtrix);
         matrix1.mapRect(rectFDestination, rectFSource);
 
-        return rectFDestination.contains(event.getX(),event.getY());
+        return rectFDestination.contains(event.getX(), event.getY());
 
     }
 
@@ -129,19 +118,9 @@ public class MainActivity extends AppCompatActivity {
     @DebugLog
     private void scaleImage(float scaleFactor, float focusX, float focusY) {
         matrix = imageView.getImageMatrix();
-        Matrix displayMatrix= new Matrix();
+        Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        displayMatrix.postScale(scaleFactor, scaleFactor,focusX,focusY);
-//        displayMatrix.postTranslate(-translateX, -translateY);
-//        float[] f = new float[9];
-//        displayMatrix.getValues(f);
-//        float scaleX = f[Matrix.MSCALE_X];
-//        float scaleY = f[Matrix.MSCALE_Y];
-//        displayedImageWidth = imageWidth * scaleX;
-//        displayedImageHeigth = imageHeight * scaleY;
-//        translateX = (imageView.getWidth() - displayedImageWidth) / 2;
-//        translateY = (imageView.getHeight() - displayedImageHeigth) / 2;
-//        displayMatrix.postTranslate(translateX, translateY);
+        displayMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
         imageView.setImageMatrix(displayMatrix);
     }
 
@@ -177,8 +156,6 @@ public class MainActivity extends AppCompatActivity {
                     float scaleY = f[Matrix.MSCALE_Y];
                     displayedImageWidth = imageWidth * scaleX;
                     displayedImageHeigth = imageHeight * scaleY;
-                    translateX = (imageView.getWidth() - displayedImageWidth) / 2;
-                    translateY = (imageView.getHeight() - displayedImageHeigth) / 2;
                 }
         }
     }
@@ -211,8 +188,6 @@ public class MainActivity extends AppCompatActivity {
         Matrix matrix = imageView.getImageMatrix();
         Matrix temp = new Matrix();
         temp.set(matrix);
-        float[] f = new float[9];
-        temp.getValues(f);
         RectF rectFSource = new RectF();
         RectF rectFDestination = new RectF();
         rectFSource.top = 0;
@@ -239,14 +214,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int getWidth() {
-        Matrix matrix = imageView.getImageMatrix();
-        Matrix temp = new Matrix();
-        temp.set(matrix);
-        float[] f = new float[9];
-        temp.getValues(f);
-        temp.postRotate(-getCurrentAngle(), imageView.getWidth() / 2, imageView.getHeight() / 2);
-        f = new float[9];
-        temp.getValues(f);
         RectF rectFSource = new RectF();
         RectF rectFDestination = new RectF();
         rectFSource.top = 0;
@@ -273,11 +240,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int getY() {
-        Matrix matrix = imageView.getImageMatrix();
-        Matrix temp = new Matrix();
-        temp.set(matrix);
-        float[] f = new float[9];
-        temp.getValues(f);
         RectF rectFSource = new RectF();
         RectF rectFDestination = new RectF();
         rectFSource.top = 0;
@@ -306,11 +268,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public int getX() {
-        Matrix matrix = imageView.getImageMatrix();
-        Matrix temp = new Matrix();
-        temp.set(matrix);
-        float[] f = new float[9];
-        temp.getValues(f);
         RectF rectFSource = new RectF();
         RectF rectFDestination = new RectF();
         rectFSource.top = 0;
@@ -347,23 +304,21 @@ public class MainActivity extends AppCompatActivity {
         Matrix rotateMatrixx = new Matrix();
         rotateMatrixx.set(matrix);
         rotateMatrixx.postRotate(-previousAngle, previousPivotX, previousPivotY);
-        //if(previousAngle!=NO_ROTATION)imageView.setImageMatrix(rotateMatrixx);
         matrix = imageView.getImageMatrix();
         Matrix displayMatrix = new Matrix();
         displayMatrix.set(matrix);
-        //float rotationAngle = currentAngle + startAngle;
         displayMatrix.postRotate(currentAngle, currentPivotX, currentPivotY);
         imageView.setImageMatrix(displayMatrix);
-        previousPivotX=currentPivotX;
-        previousPivotY=currentPivotY;
-        previousAngle=currentAngle;
+        previousPivotX = currentPivotX;
+        previousPivotY = currentPivotY;
+        previousAngle = currentAngle;
     }
 
     @DebugLog
     public void onEndRotation() {
         float angle = previousAngle;
-        if(true){
-            previousAngle=NO_ROTATION;
+        if (true) {
+            previousAngle = NO_ROTATION;
             return;
         }
         float snapAngle = 0;
@@ -383,9 +338,8 @@ public class MainActivity extends AppCompatActivity {
         displayMatrix.set(matrix);
         displayMatrix.postRotate(-snapAngle, previousPivotX, previousPivotY);
         imageView.setImageMatrix(displayMatrix);
-        previousAngle=NO_ROTATION;
+        previousAngle = NO_ROTATION;
     }
-
 
 
     public float getCurrentAngle() {
