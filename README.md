@@ -1,6 +1,6 @@
 # Touch
 
-**Now we use a custom View `ViewFinder`**
+**Now we use a custom View `ViewFinder`!**
 
 ~~This work is unfinished, please consider it as an such, I have tried to implement all the features I could in the given time rather than polish it.~~
 ~~The result is ugly, I apologize for the discomfort of reading it.~~
@@ -9,8 +9,8 @@
 
 Pan and zoom are completed, ~~rotation is not ()~~ **is completed**.
 
-~~Regarding rotation I could not complete the saving of the image.~~
-**FIXED!**
+~~Regarding rotation I could not complete the saving of the image.~~ **FIXED!**
+
 ~~Getting the scaled and panned image that matches what the user is looking at, poses an extra problem when the image is rotated, because, depending on the rotation, a completely different part of the image should be saved. This is because the user can translate and rotate the image even outside of the viewfinder, thus making complex to reconstruct the result to be saved.~~
 **FIXED!**
 
