@@ -21,8 +21,8 @@ import hugo.weaving.DebugLog;
  * Created by Maurizio Pietrantuono, maurizio.pietrantuono@gmail.com.
  */
 public class ViewFinder extends ImageView {
+    private static final float ASPECT_RATIO=1819/1382f;
     private float previousAngle;
-
     private MultiGestureDetector multiGestureDetector;
 
     public ViewFinder(Context context) {
@@ -322,7 +322,6 @@ public class ViewFinder extends ImageView {
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        //super.onRestoreInstanceState(state);
         if(!(state instanceof ViewFinderSavedState)){
             super.onRestoreInstanceState(state);
             return;
@@ -333,9 +332,6 @@ public class ViewFinder extends ImageView {
         setImageMatrix(viewFinderSavedState.matrix);
         initDedetector();
     }
-
-
-
 
     public static class ViewFinderSavedState extends BaseSavedState {
         Matrix matrix;
@@ -374,5 +370,13 @@ public class ViewFinder extends ImageView {
                 return new ViewFinderSavedState[size];
             }
         };
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = getMeasuredWidth();
+        int heigth= (int) (width/ASPECT_RATIO);
+        setMeasuredDimension(width, heigth);
     }
 }
