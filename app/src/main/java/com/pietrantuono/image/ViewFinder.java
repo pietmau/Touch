@@ -2,7 +2,12 @@ package com.pietrantuono.image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
@@ -21,9 +26,20 @@ import hugo.weaving.DebugLog;
  * Created by Maurizio Pietrantuono, maurizio.pietrantuono@gmail.com.
  */
 public class ViewFinder extends ImageView {
-    private static final float ASPECT_RATIO=1819/1382f;
+    private static final float ASPECT_RATIO = 1819 / 1382f;
+    private static final float DEFAULT_TEXT_SIZE = 20;
+    private static final float DEFAULT_SEPARATOR_SIZE = 10;
+    private static final String SCALE = "SCALE";
+    private static final String ANGLE = "ANGLE";
+    private static final String TRANSLATIONX = "TRANSLATION X";
+    private static final String TRANSLATIONY = "TRANSLATION Y";
+    private static final int GRID_SIZE = 100;
     private float previousAngle;
     private MultiGestureDetector multiGestureDetector;
+    private Paint textPaint;
+    private Paint drawingPaint;
+    private Paint drawingPaintDotted;
+    private int DEFAULT_TEXT_COLOR = Color.parseColor("#004d00");
 
     public ViewFinder(Context context) {
         super(context);
@@ -74,8 +90,25 @@ public class ViewFinder extends ImageView {
             setImageMatrix(matrix);
         }
         initDedetector();
+        initPaint();
     }
 
+    private void initPaint() {
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setColor(DEFAULT_TEXT_COLOR);
+        textPaint.setTextSize(DEFAULT_TEXT_SIZE);
+
+
+        drawingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        drawingPaint.setColor(DEFAULT_TEXT_COLOR);
+        drawingPaint.setStyle(Paint.Style.STROKE);
+
+        drawingPaintDotted = new Paint();
+        drawingPaintDotted.setColor(DEFAULT_TEXT_COLOR);
+        drawingPaintDotted.setStyle(Paint.Style.STROKE);
+        drawingPaintDotted.setPathEffect(new DashPathEffect(new float[]{10f, 20f}, 0));
+
+    }
 
     private void initDedetector() {
         multiGestureDetector = new MultiGestureDetector(new MultiGestureDetectorListener() {
@@ -311,26 +344,28 @@ public class ViewFinder extends ImageView {
     @Override
     protected Parcelable onSaveInstanceState() {
         //return super.onSaveInstanceState();
-        Parcelable stateOfSuper=super.onSaveInstanceState();
+        Parcelable stateOfSuper = super.onSaveInstanceState();
         ViewFinderSavedState viewFinderSavedState = new ViewFinderSavedState(stateOfSuper);
         try {
             viewFinderSavedState.matrix = getImageMatrix();
-        } catch (Exception e){}
-        if(getDrawable()!=null)viewFinderSavedState.bitmap=((BitmapDrawable)getDrawable()).getBitmap();
+        } catch (Exception e) {
+        }
+        if (getDrawable() != null)
+            viewFinderSavedState.bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
         return viewFinderSavedState;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if(!(state instanceof ViewFinderSavedState)){
+        if (!(state instanceof ViewFinderSavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
-        ViewFinderSavedState viewFinderSavedState= (ViewFinderSavedState) state;
+        ViewFinderSavedState viewFinderSavedState = (ViewFinderSavedState) state;
         super.onRestoreInstanceState(viewFinderSavedState.getSuperState());
-        if(viewFinderSavedState.bitmap!=null)setImageBitmap(viewFinderSavedState.bitmap);
+        if (viewFinderSavedState.bitmap != null) setImageBitmap(viewFinderSavedState.bitmap);
         setImageMatrix(viewFinderSavedState.matrix);
-        initDedetector();
+
     }
 
     public static class ViewFinderSavedState extends BaseSavedState {
@@ -347,7 +382,7 @@ public class ViewFinder extends ImageView {
             float[] values = new float[9];
             matrix.getValues(values);
             out.writeFloatArray(values);
-            out.writeParcelable(bitmap,flags);
+            out.writeParcelable(bitmap, flags);
         }
 
         public ViewFinderSavedState(Parcel source) {
@@ -355,7 +390,7 @@ public class ViewFinder extends ImageView {
             float[] values = source.createFloatArray();
             matrix = new Matrix();
             matrix.setValues(values);
-            bitmap=Bitmap.CREATOR.createFromParcel(source);
+            bitmap = Bitmap.CREATOR.createFromParcel(source);
         }
 
         @SuppressWarnings("hiding")
@@ -376,7 +411,56 @@ public class ViewFinder extends ImageView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = getMeasuredWidth();
-        int heigth= (int) (width/ASPECT_RATIO);
+        int heigth = (int) (width / ASPECT_RATIO);
         setMeasuredDimension(width, heigth);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (getDrawable() == null) return;
+
+        canvas.drawText(SCALE + " = " + getBitmapScale(), 0 + DEFAULT_SEPARATOR_SIZE, getMeasuredHeight() - DEFAULT_SEPARATOR_SIZE, textPaint);
+        canvas.drawText(ANGLE + " = " + getBitmapAngle(), 0 + DEFAULT_SEPARATOR_SIZE, getMeasuredHeight() - (DEFAULT_SEPARATOR_SIZE + DEFAULT_TEXT_SIZE), textPaint);
+        canvas.drawText(TRANSLATIONX + " = " + getBitmapTranslationX(), 0 + DEFAULT_SEPARATOR_SIZE, getMeasuredHeight() - (DEFAULT_SEPARATOR_SIZE + 2 * DEFAULT_TEXT_SIZE), textPaint);
+        canvas.drawText(TRANSLATIONY + " = " + getBitmapTranslationY(), 0 + DEFAULT_SEPARATOR_SIZE, getMeasuredHeight() - (DEFAULT_SEPARATOR_SIZE + 3 * DEFAULT_TEXT_SIZE), textPaint);
+
+        canvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, getMeasuredHeight() / 4, drawingPaint);
+        canvas.drawLine(0, 0, getMeasuredWidth(), getMeasuredHeight(), drawingPaint);
+        canvas.drawLine(0, getMeasuredHeight(), getMeasuredWidth(), 0, drawingPaint);
+    }
+
+    private float getBitmapTranslationX() {
+        Matrix matrix = new Matrix();
+        matrix.set(getImageMatrix());
+        float[] values = new float[9];
+        matrix.getValues(values);
+        return values[Matrix.MTRANS_X];
+    }
+
+    private float getBitmapTranslationY() {
+        Matrix matrix = new Matrix();
+        matrix.set(getImageMatrix());
+        float[] values = new float[9];
+        matrix.getValues(values);
+        return values[Matrix.MTRANS_Y];
+    }
+
+    private float getBitmapScale() {
+        Matrix matrix = new Matrix();
+        matrix.set(getImageMatrix());
+        float[] values = new float[9];
+        matrix.getValues(values);
+        float scalex = values[Matrix.MSCALE_X];
+        float skewy = values[Matrix.MSKEW_Y];
+        return (float) Math.sqrt(scalex * scalex + skewy * skewy);
+    }
+
+    private float getBitmapAngle() {
+        Matrix matrix = new Matrix();
+        matrix.set(getImageMatrix());
+        float[] values = new float[9];
+        matrix.getValues(values);
+        return Math.round(Math.atan2(values[Matrix.MSKEW_X], values[Matrix.MSCALE_X]) * (180 / Math.PI));
     }
 }
