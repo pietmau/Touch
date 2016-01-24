@@ -310,7 +310,6 @@ public class ViewFinder extends ImageView {
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        //return super.onSaveInstanceState();
         Parcelable stateOfSuper=super.onSaveInstanceState();
         ViewFinderSavedState viewFinderSavedState = new ViewFinderSavedState(stateOfSuper);
         try {
