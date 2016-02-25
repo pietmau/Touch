@@ -2,11 +2,6 @@
 
 **Now we use a custom View `ViewFinder`!**
 
-~~This work is unfinished, please consider it as an such, I have tried to implement all the features I could in the given time rather than polish it.~~
-~~The result is ugly, I apologize for the discomfort of reading it.~~
-~~Needs to be cleaned (badly), refactored (very badly) and obviously all features should be implemented.~~
-**FIXED!**
-
 Pan and zoom are completed, ~~rotation is not ()~~ **is completed**.
 
 ~~Regarding rotation I could not complete the saving of the image.~~ **FIXED!**
