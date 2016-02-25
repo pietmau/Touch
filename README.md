@@ -1,6 +1,6 @@
 # Touch
 
-**Now we use a custom View `ViewFinder`!**
+**Now we use a custom View `ViewFinder`**
 
 Pan and zoom are completed, ~~rotation is not ()~~ **is completed**.
 
