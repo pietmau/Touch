@@ -13,5 +13,5 @@ Need to be completed:
  - ~~make sure different gestures (pan/zoom/rotate) don’t conflict,~~ **FIXED!**
  - ~~rotation of the image on the center of the image itself (now rotates on the center of the ImageView),~~ ~~**FIXED!**~~ **UPDATED: it's better if image rotates around center of the viewfinder, reverting to original**
  - ~~initial setup of the image depending on dimensions,~~ **DONE!**
- - ~~memory management,~~ **How to apply the matrix and save the bitmap without loading it in memory???**
+ - ~~memory management,~~ **How to apply the matrix and save the bitmap without loading it in memory? Apparenty no solution for this, possible OOM. Instead of loading in memory two bitmpas at the same time we could wait for the user to finish and only then do the processing**
  - ~~1819x1382 pixels aspect ratio.~~ **DONE!**
